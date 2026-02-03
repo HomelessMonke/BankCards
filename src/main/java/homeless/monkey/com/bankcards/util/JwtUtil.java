@@ -10,12 +10,13 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String SECRET = System.getenv("JWT_SECRET");
+    private static final long EXPIRATION_MS = Long.parseLong(System.getenv("JWT_EXPIRATION_MS"));
 
     public static String generateToken(String username) {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 3600000)) // 1 час
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)), Jwts.SIG.HS256)
                 .compact();
     }

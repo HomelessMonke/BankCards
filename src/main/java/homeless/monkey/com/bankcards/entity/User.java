@@ -1,10 +1,13 @@
 package homeless.monkey.com.bankcards.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
