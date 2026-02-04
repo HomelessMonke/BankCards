@@ -4,6 +4,8 @@ import homeless.monkey.com.bankcards.dto.LoginRequestDTO;
 import homeless.monkey.com.bankcards.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +24,14 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody LoginRequestDTO requestDTO){
 
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDTO.email(),
                         requestDTO.password()
                 )
         );
 
-        return JwtUtil.generateToken(requestDTO.email());
+        var userDetails = (UserDetails) authentication.getPrincipal();
+        return JwtUtil.generateToken(userDetails);
     }
 }
