@@ -2,7 +2,10 @@ package homeless.monkey.com.bankcards.controller;
 
 import homeless.monkey.com.bankcards.dto.LoginRequestDTO;
 import homeless.monkey.com.bankcards.util.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,16 +25,28 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO requestDTO){
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO requestDTO){
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestDTO.email(),
-                        requestDTO.password()
-                )
-        );
-
-        var userDetails = (UserDetails) authentication.getPrincipal();
-        return JwtUtil.generateToken(userDetails);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            requestDTO.email(),
+                            requestDTO.password()
+                    )
+            );
+            var userDetails = (UserDetails) authentication.getPrincipal();
+            String token = JwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok(token);
+        }
+        catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Неверный email или пароль");
+        }
+        catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ошибка аутентификации: " + e.getMessage());
+        }
     }
 }
