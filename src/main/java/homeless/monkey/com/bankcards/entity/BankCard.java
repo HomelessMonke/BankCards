@@ -26,6 +26,10 @@ public class BankCard {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CardStatus cardStatus = CardStatus.ACTIVE;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
