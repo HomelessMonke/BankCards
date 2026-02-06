@@ -2,6 +2,7 @@ package homeless.monkey.com.bankcards.service;
 
 import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
 import homeless.monkey.com.bankcards.dto.CardCreationResponseDTO;
+import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
 import homeless.monkey.com.bankcards.entity.BankCard;
 import homeless.monkey.com.bankcards.entity.CardStatus;
 import homeless.monkey.com.bankcards.repository.CardsRepository;
@@ -9,8 +10,6 @@ import homeless.monkey.com.bankcards.repository.UserRepository;
 import homeless.monkey.com.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CardService {
@@ -48,11 +47,20 @@ public class CardService {
                 card.getOwner().getId());
     }
 
-    public void deleteCard(Long cardId){
-        var card = cardsRepository.findById(cardId)
-                .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardId + " не найдена"));
-
+    public void deleteCard(Long cardID){
+        var card = getCard(cardID);
         cardsRepository.delete(card);
+    }
+
+    public void updateCardStatus(Long cardID, UpdateCardStatusDTO dto){
+        var card = getCard(cardID);
+        card.setCardStatus(dto.status());
+        cardsRepository.save(card);
+    }
+
+    private BankCard getCard(Long cardID){
+        return cardsRepository.findById(cardID)
+                .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardID + " не найдена"));
     }
 
     private String generateCardNumber() {

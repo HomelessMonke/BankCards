@@ -2,6 +2,7 @@ package homeless.monkey.com.bankcards.controller;
 
 import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
 import homeless.monkey.com.bankcards.dto.CardCreationResponseDTO;
+import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
 import homeless.monkey.com.bankcards.service.CardService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,5 +31,11 @@ public class CardController {
     public ResponseEntity<Void> deleteAnyCard(@PathVariable Long cardID){
         cardService.deleteCard(cardID);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/admin/card/{cardID}/status")
+    public void updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDTO dto){
+        cardService.updateCardStatus(cardID, dto);
     }
 }
