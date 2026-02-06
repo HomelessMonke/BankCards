@@ -5,7 +5,7 @@ import homeless.monkey.com.bankcards.entity.CardStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record CardCreationResponseDTO (
+public record CardResponseDTO(
         Long id,
         String maskedCardNumber,
         LocalDate expirationDate,
