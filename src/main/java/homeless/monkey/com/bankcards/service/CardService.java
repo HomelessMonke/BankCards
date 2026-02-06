@@ -10,6 +10,8 @@ import homeless.monkey.com.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CardService {
 
@@ -36,14 +38,21 @@ public class CardService {
         card.setBalance(dto.getBalance());
         card.setCardStatus(CardStatus.ACTIVE);
         card.setOwner(user);
-
         cardsRepository.save(card);
-        return new CardCreationResponseDTO(user.getId(),
+
+        return new CardCreationResponseDTO(card.getId(),
                 CardUtil.getMaskedCardNumber(cardNumber),
                 card.getExpirationDate(),
                 card.getBalance(),
                 card.getCardStatus(),
                 card.getOwner().getId());
+    }
+
+    public void deleteCard(Long cardId){
+        var card = cardsRepository.findById(cardId)
+                .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardId + " не найдена"));
+
+        cardsRepository.delete(card);
     }
 
     private String generateCardNumber() {

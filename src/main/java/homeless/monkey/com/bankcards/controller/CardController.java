@@ -5,11 +5,9 @@ import homeless.monkey.com.bankcards.dto.CardCreationResponseDTO;
 import homeless.monkey.com.bankcards.service.CardService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CardController {
@@ -20,10 +18,17 @@ public class CardController {
         this.cardService = cardService;
     }
 
+    @PostMapping("/admin/card")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("admin/card")
     @ResponseStatus(HttpStatus.CREATED)
     public CardCreationResponseDTO createCard(@Valid @RequestBody CardCreationRequestDTO dto){
         return cardService.createCard(dto);
+    }
+
+    @DeleteMapping("/admin/card/{cardID}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteAnyCard(@PathVariable Long cardID){
+        cardService.deleteCard(cardID);
+        return ResponseEntity.noContent().build();
     }
 }
