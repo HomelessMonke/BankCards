@@ -43,10 +43,5 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Неверный email или пароль");
         }
-        catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ошибка аутентификации: " + e.getMessage());
-        }
     }
 }
