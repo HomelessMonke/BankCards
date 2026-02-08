@@ -1,6 +1,6 @@
 package homeless.monkey.com.bankcards.security;
 
-import homeless.monkey.com.bankcards.entity.User;
+import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
         return new CustomUserDetails(user);

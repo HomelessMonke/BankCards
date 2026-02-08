@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "users")
 @Setter
 @Getter
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,5 +32,5 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<BankCard> bankCard;
+    private List<CardEntity> bankCard;
 }

@@ -3,12 +3,13 @@ package homeless.monkey.com.bankcards.controller;
 import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
 import homeless.monkey.com.bankcards.dto.CardResponseDTO;
 import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
+import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.service.CardService;
+import homeless.monkey.com.bankcards.service.UserService;
+import homeless.monkey.com.bankcards.util.PageUtil;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class CardController {
 
     private final CardService cardService;
+    private final UserService userService;
 
-    public CardController(CardService cardService) {
+    public CardController(CardService cardService, UserService userService) {
         this.cardService = cardService;
+        this.userService = userService;
     }
 
     @PostMapping("/admin/cards")
@@ -50,8 +53,7 @@ public class CardController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String sort){
 
-        Sort sortObj = Sort.by(Sort.Direction.fromString(sort.split(",")[1]), sort.split(",")[0]);
-        Pageable pageable = PageRequest.of(page, size, sortObj);
+        Pageable pageable = PageUtil.createPageable(page, size, sort);
         return cardService.getAllCards(pageable);
     }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "bank_cards")
-public class BankCard {
+public class CardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,5 +32,5 @@ public class BankCard {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    private UserEntity owner;
 }

@@ -3,12 +3,13 @@ package homeless.monkey.com.bankcards.service;
 import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
 import homeless.monkey.com.bankcards.dto.CardResponseDTO;
 import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
-import homeless.monkey.com.bankcards.entity.BankCard;
+import homeless.monkey.com.bankcards.entity.CardEntity;
 import homeless.monkey.com.bankcards.entity.CardStatus;
 import homeless.monkey.com.bankcards.repository.CardsRepository;
 import homeless.monkey.com.bankcards.repository.UserRepository;
 import homeless.monkey.com.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
+import homeless.monkey.com.bankcards.mapper.CardMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,23 +21,18 @@ public class CardService {
 
     private final CardsRepository cardsRepository;
     private final UserRepository userRepository;
+    private final CardMapper cardMapper;
 
-    public CardService(CardsRepository cardsRepository, UserRepository userRepository) {
+    public CardService(CardsRepository cardsRepository, UserRepository userRepository, CardMapper cardMapper) {
         this.cardsRepository = cardsRepository;
         this.userRepository = userRepository;
+        this.cardMapper = cardMapper;
     }
 
     public Page<CardResponseDTO> getAllCards(Pageable pageable){
 
-        Page<BankCard> cardsPage = cardsRepository.findAll(pageable);
-        return cardsPage.map(card -> new CardResponseDTO(
-                card.getId(),
-                CardUtil.getMaskedCardNumber(card.getCardNumber()),
-                card.getExpirationDate(),
-                card.getBalance(),
-                card.getCardStatus(),
-                card.getOwner().getId()
-        ));
+        Page<CardEntity> cardsPage = cardsRepository.findAll(pageable);
+        return cardsPage.map(cardMapper::toResponseDto);
     }
 
     @Transactional
@@ -46,7 +42,7 @@ public class CardService {
                 .orElseThrow(()-> new IllegalArgumentException(String.format("Пользователя с ID %s не найдено", dto.getOwnerId())));
 
         var cardNumber = generateCardNumber();
-        var card = new BankCard();
+        var card = new CardEntity();
         card.setCardNumber(cardNumber);
         card.setExpirationDate(dto.getExpirationDate());
         card.setBalance(dto.getBalance());
@@ -54,12 +50,7 @@ public class CardService {
         card.setOwner(user);
         cardsRepository.save(card);
 
-        return new CardResponseDTO(card.getId(),
-                CardUtil.getMaskedCardNumber(cardNumber),
-                card.getExpirationDate(),
-                card.getBalance(),
-                card.getCardStatus(),
-                card.getOwner().getId());
+        return cardMapper.toResponseDto(card);
     }
 
     public void deleteCard(Long cardID){
@@ -73,7 +64,7 @@ public class CardService {
         cardsRepository.save(card);
     }
 
-    private BankCard getCard(Long cardID){
+    private CardEntity getCard(Long cardID){
         return cardsRepository.findById(cardID)
                 .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardID + " не найдена"));
     }

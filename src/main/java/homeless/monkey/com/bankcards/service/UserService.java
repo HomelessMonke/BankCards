@@ -2,13 +2,12 @@ package homeless.monkey.com.bankcards.service;
 
 import homeless.monkey.com.bankcards.dto.UserCreationRequestDTO;
 import homeless.monkey.com.bankcards.dto.UserCreationResponseDTO;
-import homeless.monkey.com.bankcards.entity.User;
+import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class UserService {
             throw new IllegalStateException("Пользователь с email " + dto.email() + " существует!");
         }
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
         user.setEmail(dto.email());
@@ -49,7 +48,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id){
-        User user = userRepository.findById(id)
+        UserEntity user = userRepository.findById(id)
                 .orElseThrow(()-> new IllegalStateException("Пользователь с id:" + id + " существует!"));
 
         var currentUser = getCurrentUser();
@@ -59,7 +58,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User getCurrentUser(){
+    public UserEntity getCurrentUser(){
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth == null || !auth.isAuthenticated())
@@ -71,6 +70,6 @@ public class UserService {
                     .orElseThrow(()-> new UsernameNotFoundException("Пользователь с email:" + email + " не найден"));
         }
 
-        throw new AccessDeniedException("Неверный тип principal");
+        throw new AccessDeniedException("Пустой principal");
     }
 }

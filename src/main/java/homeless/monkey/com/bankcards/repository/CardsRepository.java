@@ -1,12 +1,11 @@
 package homeless.monkey.com.bankcards.repository;
 
-import homeless.monkey.com.bankcards.entity.BankCard;
+import homeless.monkey.com.bankcards.entity.CardEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface CardsRepository extends JpaRepository<BankCard, Long> {
+public interface CardsRepository extends JpaRepository<CardEntity, Long> {
 
-    Optional<BankCard> findBankCardByCardNumber(String cardNumber);
+    Optional<CardEntity> findBankCardByCardNumber(String cardNumber);
 }

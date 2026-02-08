@@ -1,6 +1,6 @@
 package homeless.monkey.com.bankcards.security;
 
-import homeless.monkey.com.bankcards.entity.User;
+import homeless.monkey.com.bankcards.entity.UserEntity;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,9 +11,9 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final UserEntity user;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(UserEntity user) {
         this.user = user;
     }
 
