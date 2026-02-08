@@ -1,7 +1,7 @@
 package homeless.monkey.com.bankcards.service;
 
-import homeless.monkey.com.bankcards.dto.UserCreationRequestDTO;
-import homeless.monkey.com.bankcards.dto.UserCreationResponseDTO;
+import homeless.monkey.com.bankcards.dto.user.UserCreationRequestDto;
+import homeless.monkey.com.bankcards.dto.user.UserCreationResponseDto;
 import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,7 +24,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserCreationResponseDTO createUser(UserCreationRequestDTO dto){
+    public UserCreationResponseDto createUser(UserCreationRequestDto dto){
 
         if(userRepository.existsByEmail(dto.email())){
             throw new IllegalStateException("Пользователь с email " + dto.email() + " существует!");
@@ -38,7 +38,7 @@ public class UserService {
         user.setRole(dto.role());
         userRepository.save(user);
 
-        return new UserCreationResponseDTO(
+        return new UserCreationResponseDto(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),

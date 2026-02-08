@@ -9,9 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public final class CardSearchSpecifications {
+public final class CardFilterSpecifications {
 
-    private CardSearchSpecifications() {}
+    private CardFilterSpecifications() {}
 
     public static Specification<CardEntity> byOwnerId(Long ownerId){
         return (root, cq, cb) ->

@@ -1,8 +1,9 @@
-package homeless.monkey.com.bankcards.dto;
+package homeless.monkey.com.bankcards.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequestDTO(
+public record LoginRequestDto(
+
         @NotBlank
         String email,
 

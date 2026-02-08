@@ -1,4 +1,4 @@
-package homeless.monkey.com.bankcards.dto;
+package homeless.monkey.com.bankcards.dto.card;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CardCreationRequestDTO {
+public class CardCreationRequestDto {
 
         @NotNull(message = "ID владельца обязательно!")
         private Long ownerId;

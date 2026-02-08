@@ -1,8 +1,8 @@
-package homeless.monkey.com.bankcards.dto;
+package homeless.monkey.com.bankcards.dto.user;
 
 import homeless.monkey.com.bankcards.entity.Role;
 
-public record UserCreationResponseDTO(
+public record UserCreationResponseDto(
 
         Long id,
         String firstName,

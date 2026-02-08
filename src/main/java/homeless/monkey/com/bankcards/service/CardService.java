@@ -1,17 +1,22 @@
 package homeless.monkey.com.bankcards.service;
 
-import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
-import homeless.monkey.com.bankcards.dto.CardResponseDTO;
-import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
+import homeless.monkey.com.bankcards.dto.card.CardCreationRequestDto;
+import homeless.monkey.com.bankcards.dto.card.CardResponseDto;
+import homeless.monkey.com.bankcards.dto.card.CardSearchRequestDto;
+import homeless.monkey.com.bankcards.dto.card.UpdateCardStatusDto;
 import homeless.monkey.com.bankcards.entity.CardEntity;
 import homeless.monkey.com.bankcards.entity.CardStatus;
+import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.CardsRepository;
 import homeless.monkey.com.bankcards.repository.UserRepository;
+import homeless.monkey.com.bankcards.util.CardFilterSpecifications;
 import homeless.monkey.com.bankcards.util.CardUtil;
+import homeless.monkey.com.bankcards.util.PageUtil;
 import jakarta.transaction.Transactional;
 import homeless.monkey.com.bankcards.mapper.CardMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,14 +34,26 @@ public class CardService {
         this.cardMapper = cardMapper;
     }
 
-    public Page<CardResponseDTO> getAllCards(Pageable pageable){
-
+    public Page<CardResponseDto> getAllCards(Pageable pageable){
         Page<CardEntity> cardsPage = cardsRepository.findAll(pageable);
         return cardsPage.map(cardMapper::toResponseDto);
     }
 
+    public Page<CardResponseDto> getUserCards(UserEntity user, CardSearchRequestDto searchDto){
+
+        Pageable pageable = PageUtil.createPageable(searchDto.getPage(),searchDto.getSize(), searchDto.getSort());
+        Specification<CardEntity> spec = CardFilterSpecifications.byOwnerId(user.getId());
+
+        var filter = searchDto.getCardFilter();
+        if(filter != null){
+            spec = spec.and(CardFilterSpecifications.fromFilter(filter));
+        }
+
+        return cardsRepository.findAll(spec, pageable).map(cardMapper::toResponseDto);
+    }
+
     @Transactional
-    public CardResponseDTO createCard(CardCreationRequestDTO dto){
+    public CardResponseDto createCard(CardCreationRequestDto dto){
 
         var user = userRepository.findById(dto.getOwnerId())
                 .orElseThrow(()-> new IllegalArgumentException(String.format("Пользователя с ID %s не найдено", dto.getOwnerId())));
@@ -58,7 +75,7 @@ public class CardService {
         cardsRepository.delete(card);
     }
 
-    public void updateCardStatus(Long cardID, UpdateCardStatusDTO dto){
+    public void updateCardStatus(Long cardID, UpdateCardStatusDto dto){
         var card = getCard(cardID);
         card.setCardStatus(dto.status());
         cardsRepository.save(card);

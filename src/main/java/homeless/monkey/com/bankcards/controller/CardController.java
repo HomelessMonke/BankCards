@@ -1,8 +1,6 @@
 package homeless.monkey.com.bankcards.controller;
 
-import homeless.monkey.com.bankcards.dto.CardCreationRequestDTO;
-import homeless.monkey.com.bankcards.dto.CardResponseDTO;
-import homeless.monkey.com.bankcards.dto.UpdateCardStatusDTO;
+import homeless.monkey.com.bankcards.dto.card.*;
 import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.service.CardService;
 import homeless.monkey.com.bankcards.service.UserService;
@@ -29,7 +27,7 @@ public class CardController {
     @PostMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CardResponseDTO createCard(@Valid @RequestBody CardCreationRequestDTO dto){
+    public CardResponseDto createCard(@Valid @RequestBody CardCreationRequestDto dto){
         return cardService.createCard(dto);
     }
 
@@ -42,18 +40,26 @@ public class CardController {
 
     @PatchMapping("/admin/cards/{cardID}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDTO dto){
+    public void updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDto dto){
         cardService.updateCardStatus(cardID, dto);
     }
 
     @GetMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<CardResponseDTO> getAllCards(
+    public Page<CardResponseDto> getAllCards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String sort){
 
         Pageable pageable = PageUtil.createPageable(page, size, sort);
         return cardService.getAllCards(pageable);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/user/cards")
+    public Page<CardResponseDto> getMyCards(@Valid @RequestBody CardSearchRequestDto searchDto){
+
+        UserEntity user = userService.getCurrentUser();
+        return cardService.getUserCards(user, searchDto);
     }
 }

@@ -1,6 +1,6 @@
 package homeless.monkey.com.bankcards.controller;
 
-import homeless.monkey.com.bankcards.dto.LoginRequestDTO;
+import homeless.monkey.com.bankcards.dto.user.LoginRequestDto;
 import homeless.monkey.com.bankcards.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO requestDTO){
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDTO){
 
         try {
             Authentication authentication = authenticationManager.authenticate(

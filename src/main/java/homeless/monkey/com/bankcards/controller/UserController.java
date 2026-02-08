@@ -1,7 +1,7 @@
 package homeless.monkey.com.bankcards.controller;
 
-import homeless.monkey.com.bankcards.dto.UserCreationRequestDTO;
-import homeless.monkey.com.bankcards.dto.UserCreationResponseDTO;
+import homeless.monkey.com.bankcards.dto.user.UserCreationRequestDto;
+import homeless.monkey.com.bankcards.dto.user.UserCreationResponseDto;
 import homeless.monkey.com.bankcards.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class UserController {
     @PostMapping("/registration")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserCreationResponseDTO createUser(@RequestBody UserCreationRequestDTO userDTO){
+    public UserCreationResponseDto createUser(@RequestBody UserCreationRequestDto userDTO){
         return userService.createUser(userDTO);
     }
 

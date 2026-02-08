@@ -1,11 +1,11 @@
-package homeless.monkey.com.bankcards.dto;
+package homeless.monkey.com.bankcards.dto.user;
 
 import homeless.monkey.com.bankcards.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UserCreationRequestDTO(
+public record UserCreationRequestDto(
 
         @NotBlank(message = "Поле обязательное")
         String firstName,
