@@ -35,6 +35,8 @@ public class CardEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
+    public Long getOwnerId() {return owner.getId();}
+
     public boolean belongsToUser(Long id) {return id.equals(owner.getId());}
     public boolean isActiveCard() {return cardStatus == CardStatus.ACTIVE;}
     public boolean enoughBalance(BigDecimal compareBalance) {return balance.compareTo(compareBalance) >= 0;}

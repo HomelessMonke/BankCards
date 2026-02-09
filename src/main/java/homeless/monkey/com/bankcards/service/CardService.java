@@ -107,20 +107,37 @@ public class CardService {
         return cardMapper.toResponseDto(card);
     }
 
-    public void deleteCard(Long cardID){
-        var card = getCard(cardID);
+    public void deleteCard(Long cardId){
+        var card = getCard(cardId);
         cardsRepository.delete(card);
     }
 
-    public void updateCardStatus(Long cardID, UpdateCardStatusDto dto){
+    public void updateUserCardStatus(Long cardID, CardStatus status){
+        UserEntity user = userService.getCurrentUser();
         var card = getCard(cardID);
-        card.setCardStatus(dto.status());
+        if(!card.getOwnerId().equals(user.getId()))
+            throw new IllegalArgumentException("У пользователя нету карты с id:" + cardID);
+
+        if(status == CardStatus.EXPIRED)
+            throw new IllegalArgumentException("Нельзя установить статус EXPIRED");
+
+        card.setCardStatus(status);
         cardsRepository.save(card);
     }
 
-    private CardEntity getCard(Long cardID){
-        return cardsRepository.findById(cardID)
-                .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardID + " не найдена"));
+    public void updateCardStatus(Long cardId, CardStatus status){
+        if(status == CardStatus.EXPIRED)
+            throw new IllegalArgumentException("Нельзя установить статус EXPIRED");
+
+        var card = getCard(cardId);
+
+        card.setCardStatus(status);
+        cardsRepository.save(card);
+    }
+
+    private CardEntity getCard(Long cardId){
+        return cardsRepository.findById(cardId)
+                .orElseThrow(()-> new IllegalArgumentException("Карта с id:" + cardId + " не найдена"));
     }
 
     private String generateCardNumber() {

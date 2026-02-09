@@ -1,6 +1,7 @@
 package homeless.monkey.com.bankcards.controller;
 
 import homeless.monkey.com.bankcards.dto.card.*;
+import homeless.monkey.com.bankcards.entity.CardStatus;
 import homeless.monkey.com.bankcards.service.CardService;
 import homeless.monkey.com.bankcards.service.UserService;
 import homeless.monkey.com.bankcards.util.PageUtils;
@@ -38,7 +39,7 @@ public class CardController {
     @PatchMapping("/admin/cards/{cardID}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public void updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDto dto){
-        cardService.updateCardStatus(cardID, dto);
+        cardService.updateCardStatus(cardID, dto.status());
     }
 
     @GetMapping("/admin/cards")
@@ -62,5 +63,12 @@ public class CardController {
     @PatchMapping("/user/cards/transfer")
     public TransferResponseDto transferBalance(@Valid @RequestBody TransferRequestDto transferDto){
         return cardService.transferUserCardsBalance(transferDto);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/user/cards/{id}/block")
+    public ResponseEntity<Void> blockUserCard(@PathVariable Long id){
+        cardService.updateUserCardStatus(id, CardStatus.BLOCKED);
+        return ResponseEntity.noContent().build();
     }
 }
