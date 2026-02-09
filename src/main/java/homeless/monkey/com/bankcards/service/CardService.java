@@ -1,23 +1,23 @@
 package homeless.monkey.com.bankcards.service;
 
-import homeless.monkey.com.bankcards.dto.card.CardCreationRequestDto;
-import homeless.monkey.com.bankcards.dto.card.CardResponseDto;
-import homeless.monkey.com.bankcards.dto.card.CardSearchRequestDto;
-import homeless.monkey.com.bankcards.dto.card.UpdateCardStatusDto;
+import homeless.monkey.com.bankcards.dto.card.*;
 import homeless.monkey.com.bankcards.entity.CardEntity;
 import homeless.monkey.com.bankcards.entity.CardStatus;
 import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.CardsRepository;
 import homeless.monkey.com.bankcards.repository.UserRepository;
 import homeless.monkey.com.bankcards.util.CardFilterSpecifications;
-import homeless.monkey.com.bankcards.util.CardUtil;
-import homeless.monkey.com.bankcards.util.PageUtil;
+import homeless.monkey.com.bankcards.util.CardUtils;
+import homeless.monkey.com.bankcards.util.PageUtils;
 import jakarta.transaction.Transactional;
 import homeless.monkey.com.bankcards.mapper.CardMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class CardService {
@@ -26,11 +26,13 @@ public class CardService {
 
     private final CardsRepository cardsRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final CardMapper cardMapper;
 
-    public CardService(CardsRepository cardsRepository, UserRepository userRepository, CardMapper cardMapper) {
+    public CardService(CardsRepository cardsRepository, UserRepository userRepository, UserService userService, CardMapper cardMapper) {
         this.cardsRepository = cardsRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.cardMapper = cardMapper;
     }
 
@@ -39,9 +41,10 @@ public class CardService {
         return cardsPage.map(cardMapper::toResponseDto);
     }
 
-    public Page<CardResponseDto> getUserCards(UserEntity user, CardSearchRequestDto searchDto){
+    public Page<CardResponseDto> getUserCards(CardSearchRequestDto searchDto){
 
-        Pageable pageable = PageUtil.createPageable(searchDto.getPage(),searchDto.getSize(), searchDto.getSort());
+        UserEntity user = userService.getCurrentUser();
+        Pageable pageable = PageUtils.createPageable(searchDto.getPage(),searchDto.getSize(), searchDto.getSort());
         Specification<CardEntity> spec = CardFilterSpecifications.byOwnerId(user.getId());
 
         var filter = searchDto.getCardFilter();
@@ -50,6 +53,40 @@ public class CardService {
         }
 
         return cardsRepository.findAll(spec, pageable).map(cardMapper::toResponseDto);
+    }
+
+    @Transactional
+    public TransferResponseDto transferUserCardsBalance(TransferRequestDto transferDto){
+
+        if(Objects.equals(transferDto.getFromCardId(), transferDto.getToCardId()))
+            throw new IllegalArgumentException("Дважды указана одна и та же карта");
+
+        UserEntity user = userService.getCurrentUser();
+        CardEntity fromCard = getCardById(transferDto.getFromCardId());
+        CardEntity toCard = getCardById(transferDto.getToCardId());
+
+        var userId = user.getId();
+        if(!fromCard.belongsToUser(userId) || !toCard.belongsToUser(userId))
+            throw new AccessDeniedException("Перевод только между картами авторизованного пользователя");
+
+        if (!fromCard.isActiveCard() || !toCard.isActiveCard())
+            throw new IllegalStateException("Одна из карт не активна");
+
+        fromCard.subtractBalance(transferDto.getAmount());
+        toCard.addBalance(transferDto.getAmount());
+        cardsRepository.save(fromCard);
+        cardsRepository.save(toCard);
+
+        return new TransferResponseDto(
+                CardUtils.getMaskedCardNumber(fromCard.getCardNumber()),
+                CardUtils.getMaskedCardNumber(toCard.getCardNumber()),
+                fromCard.getBalance(),
+                toCard.getBalance());
+    }
+
+    public CardEntity getCardById(Long id){
+        return cardsRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("Карта с ID " + id + " не найдена"));
     }
 
     @Transactional
@@ -90,7 +127,7 @@ public class CardService {
         int maxAttempts = 5;
         String cardNumber;
         for (int i = 0; i < maxAttempts; i++) {
-            cardNumber = CardUtil.generateCardNumber(BIN);
+            cardNumber = CardUtils.generateCardNumber(BIN);
             if(cardsRepository.findBankCardByCardNumber(cardNumber).isEmpty())
                 return cardNumber;
         }

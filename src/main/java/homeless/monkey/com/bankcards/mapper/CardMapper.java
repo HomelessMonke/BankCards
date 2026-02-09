@@ -2,7 +2,7 @@ package homeless.monkey.com.bankcards.mapper;
 
 import homeless.monkey.com.bankcards.dto.card.CardResponseDto;
 import homeless.monkey.com.bankcards.entity.CardEntity;
-import homeless.monkey.com.bankcards.util.CardUtil;
+import homeless.monkey.com.bankcards.util.CardUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,6 +16,6 @@ public interface CardMapper {
 
     @Named("maskCardNumber")
     default String getMaskedNumber(String cardNumber){
-        return CardUtil.getMaskedCardNumber(cardNumber);
+        return CardUtils.getMaskedCardNumber(cardNumber);
     }
 }

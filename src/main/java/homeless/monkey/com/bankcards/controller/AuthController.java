@@ -1,7 +1,7 @@
 package homeless.monkey.com.bankcards.controller;
 
 import homeless.monkey.com.bankcards.dto.user.LoginRequestDto;
-import homeless.monkey.com.bankcards.util.JwtUtil;
+import homeless.monkey.com.bankcards.util.JwtUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ public class AuthController {
                     )
             );
             var userDetails = (UserDetails) authentication.getPrincipal();
-            String token = JwtUtil.generateToken(userDetails);
+            String token = JwtUtils.generateToken(userDetails);
             return ResponseEntity.ok(token);
         }
         catch (BadCredentialsException e) {

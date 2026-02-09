@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 
-public class PageUtil {
+public class PageUtils {
 
     public static Pageable createPageable(int page, int size, String sort)
     {

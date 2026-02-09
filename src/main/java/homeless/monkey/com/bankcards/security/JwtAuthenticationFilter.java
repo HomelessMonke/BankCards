@@ -1,6 +1,6 @@
 package homeless.monkey.com.bankcards.security;
 
-import homeless.monkey.com.bankcards.util.JwtUtil;
+import homeless.monkey.com.bankcards.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if(token != null){
-            var tokenPayload = JwtUtil.getPayload(token);
+            var tokenPayload = JwtUtils.getPayload(token);
             if(tokenPayload != null){
 
                 var userName = tokenPayload.getSubject();

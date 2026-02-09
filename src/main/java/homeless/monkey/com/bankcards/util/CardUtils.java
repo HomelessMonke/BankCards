@@ -2,11 +2,11 @@ package homeless.monkey.com.bankcards.util;
 
 import java.security.SecureRandom;
 
-public class CardUtil {
+public class CardUtils {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private CardUtil() {
+    private CardUtils() {
         throw new UnsupportedOperationException("This is a utility class");
     }
 

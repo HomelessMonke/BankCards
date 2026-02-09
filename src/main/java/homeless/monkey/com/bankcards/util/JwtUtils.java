@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-public class JwtUtil {
+public class JwtUtils {
 
     private static final String SECRET = System.getenv("JWT_SECRET");
     private static final long EXPIRATION_MS = Long.parseLong(System.getenv("JWT_EXPIRATION_MS"));

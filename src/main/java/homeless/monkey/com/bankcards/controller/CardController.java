@@ -1,10 +1,9 @@
 package homeless.monkey.com.bankcards.controller;
 
 import homeless.monkey.com.bankcards.dto.card.*;
-import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.service.CardService;
 import homeless.monkey.com.bankcards.service.UserService;
-import homeless.monkey.com.bankcards.util.PageUtil;
+import homeless.monkey.com.bankcards.util.PageUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.*;
 public class CardController {
 
     private final CardService cardService;
-    private final UserService userService;
 
-    public CardController(CardService cardService, UserService userService) {
+    public CardController(CardService cardService) {
         this.cardService = cardService;
-        this.userService = userService;
     }
 
     @PostMapping("/admin/cards")
@@ -51,15 +48,19 @@ public class CardController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String sort){
 
-        Pageable pageable = PageUtil.createPageable(page, size, sort);
+        Pageable pageable = PageUtils.createPageable(page, size, sort);
         return cardService.getAllCards(pageable);
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user/cards")
     public Page<CardResponseDto> getMyCards(@Valid @RequestBody CardSearchRequestDto searchDto){
+        return cardService.getUserCards(searchDto);
+    }
 
-        UserEntity user = userService.getCurrentUser();
-        return cardService.getUserCards(user, searchDto);
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/user/cards/transfer")
+    public TransferResponseDto transferBalance(@Valid @RequestBody TransferRequestDto transferDto){
+        return cardService.transferUserCardsBalance(transferDto);
     }
 }
