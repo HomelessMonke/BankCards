@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: changeset/v1-create-users-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changeset/v1-create-bankCards-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changeset/v1-init-users.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changeset/v1-init-cards.yaml
+      relativeToChangelogFile: true

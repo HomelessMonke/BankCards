@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: BankCards
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/BankCardsDB
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS}

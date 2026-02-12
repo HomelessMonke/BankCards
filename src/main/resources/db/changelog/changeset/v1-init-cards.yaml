@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-init-cards
+      author: HMonkey
+      changes:
+        - loadData:
+            file: db/data/cards.csv
+            tableName: bank_cards
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'

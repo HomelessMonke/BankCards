@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-init-users
+      author: HMonkey
+      changes:
+        - loadData:
+            file: db/data/users.csv
+            tableName: users
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
