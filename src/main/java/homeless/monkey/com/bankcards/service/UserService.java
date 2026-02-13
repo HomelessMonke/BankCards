@@ -4,6 +4,7 @@ import homeless.monkey.com.bankcards.dto.user.UserCreationRequestDto;
 import homeless.monkey.com.bankcards.dto.user.UserCreationResponseDto;
 import homeless.monkey.com.bankcards.entity.UserEntity;
 import homeless.monkey.com.bankcards.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
