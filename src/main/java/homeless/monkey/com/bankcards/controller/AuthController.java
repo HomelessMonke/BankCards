@@ -43,9 +43,7 @@ public class AuthController {
             return ResponseEntity.ok(token);
         }
         catch (BadCredentialsException e) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Неверный email или пароль");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный email или пароль");
         }
     }
 }

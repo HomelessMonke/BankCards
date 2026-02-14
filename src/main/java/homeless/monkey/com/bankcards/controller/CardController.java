@@ -30,8 +30,9 @@ public class CardController {
     @PostMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CardResponseDto createCard(@Valid @RequestBody CardCreationRequestDto dto){
-        return cardService.createCard(dto);
+    public ResponseEntity<CardResponseDto> createCard(@Valid @RequestBody CardCreationRequestDto dto){
+        CardResponseDto cardDto = cardService.createCard(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cardDto);
     }
 
     @Operation(summary = "Удалить карту (admin)")
@@ -45,34 +46,35 @@ public class CardController {
     @Operation(summary = "Установить статус карты (admin)")
     @PatchMapping("/admin/cards/{cardID}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDto dto){
+    public ResponseEntity<Void> updateCardStatus(@PathVariable Long cardID, @Valid @RequestBody UpdateCardStatusDto dto){
         cardService.updateCardStatus(cardID, dto.status());
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Получить список всех карт (admin)")
     @GetMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<CardResponseDto> getAllCards(
+    public ResponseEntity<Page<CardResponseDto>> getAllCards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String sort){
 
         Pageable pageable = PageUtils.createPageable(page, size, sort);
-        return cardService.getAllCards(pageable);
+        return ResponseEntity.ok(cardService.getAllCards(pageable));
     }
 
     @Operation(summary = "Получить список карт пользователя (user)")
     @GetMapping("/user/cards")
     @PreAuthorize("hasRole('USER')")
-    public Page<CardResponseDto> getMyCards(@Valid @RequestBody CardSearchRequestDto searchDto){
-        return cardService.getUserCards(searchDto);
+    public ResponseEntity<Page<CardResponseDto>> getMyCards(@Valid @RequestBody CardSearchRequestDto searchDto){
+        return ResponseEntity.ok(cardService.getUserCards(searchDto));
     }
 
     @Operation(summary = "Перевести баланс м/у картами пользователя (user)")
     @PatchMapping("/user/cards/transfer")
     @PreAuthorize("hasRole('USER')")
-    public TransferResponseDto transferBalance(@Valid @RequestBody TransferRequestDto transferDto){
-        return cardService.transferUserCardsBalance(transferDto);
+    public ResponseEntity<TransferResponseDto> transferBalance(@Valid @RequestBody TransferRequestDto transferDto){
+        return ResponseEntity.ok(cardService.transferUserCardsBalance(transferDto));
     }
 
     @Operation(summary = "Заблокировать карту пользователя (user)")

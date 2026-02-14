@@ -27,8 +27,9 @@ public class UserController {
     @PostMapping("/registration")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserCreationResponseDto createUser(@RequestBody UserCreationRequestDto userDTO){
-        return userService.createUser(userDTO);
+    public ResponseEntity<UserCreationResponseDto> createUser(@RequestBody UserCreationRequestDto userDTO){
+        UserCreationResponseDto responseDto = userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @Operation(summary = "Удалить пользователя (admin)")
