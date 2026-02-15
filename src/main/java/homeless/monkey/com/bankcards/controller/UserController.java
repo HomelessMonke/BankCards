@@ -6,11 +6,13 @@ import homeless.monkey.com.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Users", description = "Работа с пользователями")
@@ -28,7 +30,11 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserCreationResponseDto> createUser(@RequestBody UserCreationRequestDto userDTO){
+        log.info("POST /admin/users/registration: создание пользователя email={}, role={}",
+                userDTO.email(), userDTO.role());
+
         UserCreationResponseDto responseDto = userService.createUser(userDTO);
+        log.info("Успешное создание пользователя: id={}, email={}", responseDto.id(), responseDto.email());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -36,7 +42,9 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        log.info("DELETE /admin/users/{}: запрос удаления пользователя", id);
         userService.deleteUser(id);
+        log.info("Успешное удаление пользователя: id={})", id);
         return ResponseEntity.noContent().build();
     }
 }

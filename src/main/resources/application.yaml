@@ -30,3 +30,16 @@ springdoc:
     persist-authorization: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+
+logging:
+  level:
+    root: INFO
+    homeless.monkey.com.bankcards: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/bankcards.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
